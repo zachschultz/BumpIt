@@ -1,6 +1,9 @@
 <html> 
 <title> Hi Mom </title>
   <body>
-      <p> Elli is in! </p>
+      <h1>
+        <p> Elli is in! </p>
+        <p> Chris is a mommies boy :) </p>
+      </h1>
   </body>
 </html>
