@@ -1,0 +1,11 @@
+
+body {
+  padding-top: 90px;
+  padding-bottom: 40px;
+  color: white;
+   background: url("../img/bumpit_splash.png");
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
