@@ -2,3 +2,14 @@
 	width: 100%;
 	
 }
+
+.btn-primary {
+  color: #9ca8ac;
+  background-color: #cbe6ef;
+  border-color: #afc7cf;
+}
+.btn-primary:hover {
+  color: #cbd9de;
+  background-color: #9fb5bc;
+  border-color: #afc7cf;
+}
