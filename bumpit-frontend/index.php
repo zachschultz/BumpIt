@@ -1,3 +1,4 @@
+#!/usr/local/bin/php
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>BumpIt</title>
-
+    
     <!-- Bootstrap -->
     <link href="css/bootstrap.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -19,15 +20,44 @@
     <![endif]-->
   </head>
   <body>
+
+
+    
     <!-- Login PHP -->
     <?php
-
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    echo $username." ".$password;
-
-
+    
+    $conn = pg_connect("host=postgres.cise.ufl.edu dbname=bumpit user=ec1 password = UFProgE1");
+    if (!$conn) { 
+      echo "Connection failed";
+    exit;
+  }
+    
+    // User is registering
+    $isRegistering = $_POST['isRegistering'];
+    $reg_user = $_POST['reg_user'];
+    $reg_pass = $_POST['reg_pass'];
+    
+    if ($isRegistering)
+    {
+      //Create an account 
+      echo "REGISTERING  \n";
+      $countQuery = sprintf("SELECT count('user_id') AS numUsers FROM users;");  
+      $countResult = pg_fetch_row(pg_query($conn, $countQuery)); 
+      echo "Current number of users: ".$countResult[0];
+      // user_ID (the result is an array silly!)
+      $count = $countResult[0];
+      
+      // Add new account to the database
+      $registerQuery = sprintf("INSERT INTO users VALUES ($count, '$reg_user', '$reg_pass', 'false', '0');");
+      $registerResult = pg_query($conn, $registerQuery);
+      
+    }
+    // User is just signing in
+    $signin_user = $_POST['signin_user'];
+    $signin_pass = $_POST['signin_pass'];
+    // Sign in to database
+    $query = sprintf("SELECT real_login('$signin_user','$signin_pass');");
+    $result = pg_query($conn, $query);
 
 
 
