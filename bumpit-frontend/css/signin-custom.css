@@ -1,0 +1,30 @@
+
+body {
+  padding-top: 110px;
+  padding-bottom: 40px;
+  color: white;
+   background: url("../img/bumpit_splash.png");
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+
+.buttonWrapper {
+	text-align: center;
+}
+
+#registerButton
+{
+	position: absolute;
+	top: 20%;
+	width: 10%;
+}
+
+#signinButton {
+position: absolute;
+top:30%;
+width: 10%;
+
+}
