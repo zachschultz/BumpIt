@@ -104,7 +104,7 @@
     }
 
     // Load Friend List function
-    if($_GET['friendList']){friendList();}
+    //if($_GET['friendList']){friendList();}
 
     function friendList(){
       $userID = $_SESSION['userID'];
@@ -126,12 +126,12 @@
 
     // LOGIC NOT WORKING RIGHT YET (DISPLAYING MULTIPLES OF SAME NAME)
     // Find Friends function
-    if($_POST['search']){searchForFriends();}
+    //if($_POST['search']){searchForFriends();}
 
     function searchForFriends() {
       $search = $_POST['search'];
       $userID = $_SESSION['userID'];
-      $query = sprintf("SELECT userName FROM (SELECT friend_id FROM friends WHERE user_id = $userID) AS currFriends, users WHERE friend_id <> users.user_id AND userName ILIKE ( '%%' || "."'".$search."'"." || '%%');");
+      $query = sprintf("SELECT findFriends($userID, "."'".$search."'".");");
       echo "DEBUG PURPOSES-> SEARCHFORFRIENDS QUERY IS: ".$query;
       $result = pg_query($_SESSION['conn'], $query);
 
@@ -223,12 +223,16 @@
       <!-- Main content -->
 
       
-
-<!-- BREBTERBEBTEBRBEWBTERBTBERBTEBRTBERBTEBRBT-->
       <div class="container">
         <div class="starter-template">
+      <?php 
+      // Check if friend list function was called
+      if($_GET['friendList']){friendList();}
 
-<!-- WE WANT THE FRIENDS LIST HERE -->
+      // Check if search function was called
+      if($_POST['search']){searchForFriends();}
+      ?>
+
          </div>
        </div><!-- /.container -->
 
