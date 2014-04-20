@@ -41,7 +41,7 @@
     $(document).ready(function() {
       // Hide register/login forms
       $("#register").hide();
-      $("#signin").hide();
+
 
       
       $("#signinButton").click(function(event) {
@@ -79,7 +79,7 @@
         <input type = "hidden" name="isRegistering" value ="1">
       </form></div>
 
-      <form id="signin" style="display: none;" class="form-signin" role="form" action="index.php" method="post">
+      <form id="signin" class="form-signin" role="form" action="index.php" method="post">
         <h2 class="form-signin-heading">Please sign in</h2>
         <input type="username" name="signin_user" class="form-control" placeholder="Username" required autofocus>
         <input type="password" name="signin_pass" class="form-control" placeholder="Password" required>
@@ -87,6 +87,7 @@
           <input type="checkbox" value="remember-me"> Remember me
         </label>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <input type = "hidden" name="isSigningIn" value ="1">
       </form>
 
     </div> <!-- /container -->

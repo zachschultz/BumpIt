@@ -25,8 +25,29 @@
     
     <!-- Login PHP -->
     <?php
+    ini_set("display_errors", true);
+
+    session_start();
+
+    if (isset($_POST['signin_user']))
+    {
+      $_SESSION['signin_user']=$_POST['signin_user'];
+      $_SESSION['signin_pass']=$_POST['signin_pass'];
+      
+    }
+
+
+    
+    $signin_user = $_SESSION['signin_user'];
+    $signin_pass = $_SESSION['signin_pass'];
+    $isSigningIn = $_POST['isSigningIn'];
+    
+ 
+
+
     
     $conn = pg_connect("host=postgres.cise.ufl.edu dbname=bumpit user=ec1 password = UFProgE1");
+    $_SESSION['conn'] = $conn;
     if (!$conn) { 
       echo "Connection failed";
     exit;
@@ -40,10 +61,8 @@
     if ($isRegistering)
     {
       //Create an account 
-      echo "REGISTERING  \n";
       $countQuery = sprintf("SELECT count('user_id') AS numUsers FROM users;");  
       $countResult = pg_fetch_row(pg_query($conn, $countQuery)); 
-      echo "Current number of users: ".$countResult[0];
       // user_ID (the result is an array silly!)
       $count = $countResult[0];
       
@@ -52,13 +71,87 @@
       $registerResult = pg_query($conn, $registerQuery);
       
     }
-    // User is just signing in
-    $signin_user = $_POST['signin_user'];
-    $signin_pass = $_POST['signin_pass'];
-    // Sign in to database
-    $query = sprintf("SELECT real_login('$signin_user','$signin_pass');");
-    $result = pg_query($conn, $query);
+    
 
+    if ($isSigningIn){
+    // Sign in to database
+    $query = sprintf("SELECT login("."'".$_SESSION['signin_user']."'".","."'".$_SESSION['signin_pass']."'".");");
+    $result = pg_query($conn, $query);
+    }
+
+    // Grab userID
+    $result = pg_fetch_row(pg_query($conn, "SELECT user_id FROM users WHERE userName = "."'".$_SESSION['signin_user']."'".""));
+    $userID = $result[0];
+    $_SESSION['userID']=$userID;
+
+
+/************************************************************** 
+**************************************************************
+*****************    FUNCTIONS     ***************************
+**************************************************************
+***************************************************************/
+
+    // Logout function
+    if($_GET['logoutBtn']){logout();}
+    
+    function logout(){
+      $query = sprintf("SELECT logout("."'".$_SESSION['signin_user']."'".");");
+      $result = pg_query($_SESSION['conn'], $query);
+      header("Location: http://www.cise.ufl.edu/~zschultz");
+      exit();
+
+    }
+
+    // Load Friend List
+    if($_GET['friendList']){friendList();}
+
+      function friendList(){
+      $userID = $_SESSION['userID'];
+        $query = sprintf("SELECT username FROM (SELECT friend_id FROM friends WHERE user_id = $userID) AS currFriends, users WHERE friend_id = user_id;");
+        
+        $result = pg_query($_SESSION['conn'], $query);
+        
+        echo "<table class='table table-striped table-bordered table-hover'>\n";
+        echo "<caption>Friend List</caption>\n";
+        while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
+          echo "\t<tr>\n";
+          foreach ($line as $col_value) {
+            echo "\t\t<td>$col_value</td>\n";
+          }
+           echo "\t</tr>\n";
+          }
+          echo "</table>\n";
+    }
+    
+
+    
+
+
+    
+    
+    
+
+      // LOGIC NOT WORKING RIGHT YET (DISPLAYING MULTIPLES OF SAME NAME)
+      // Find Friends
+    function searchForFriends() {
+      $search = $_POST['search'];
+      
+      $query = sprintf("SELECT userName FROM (SELECT friend_id FROM friends WHERE user_id = $userID) AS currFriends, users WHERE friend_id <> users.user_id AND userName ILIKE ( '%%' || "."'".$search."'"." || '%%');");
+
+      $result = pg_query($conn, $query);
+
+      echo "<table class='table table-striped table-bordered table-hover'>\n";
+        echo "<caption>Friend List</caption>\n";
+        while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
+          echo "\t<tr>\n";
+          foreach ($line as $col_value) {
+            echo "\t\t<td>$col_value</td>\n";
+          }
+           echo "\t</tr>\n";
+          }
+          echo "</table>\n";
+    
+        }
 
 
     ?>
@@ -96,12 +189,15 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
-            <li><a href="splash.html">Logout</a></li>
+            <li><a id="friendList" href="index.php?friendList=true">Friend List</a></li>
+            <li>
+              <a id="logoutBtn" href="index.php?logoutBtn=true">Logout</a>
+            </li>
+
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
             
               <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
                 <li><a href="#">Another action</a></li>
                 <li><a href="#">Something else here</a></li>
                 <li class="divider"></li>
@@ -112,17 +208,36 @@
             </li>
           </ul>
           <!-- Search bar -->
-          <form class="navbar-form navbar-right" role="search">
+          <form class="navbar-form navbar-right" role="search" action="index.php" method="post">
             <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
+              <input name="search" type="text" class="form-control" placeholder="Search">
+              <input name="isSigningIn" type="hidden" value="1">
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>
          
           
         </div><!-- /.navbar-collapse -->
+
+        
+
+
+
       </div><!-- /.container-fluid -->
-</nav>
+      </nav>
+
+      <!-- Main content -->
+
+      
+
+<!-- BREBTERBEBTEBRBEWBTERBTBERBTEBRTBERBTEBRBT-->
+      <div class="container">
+        <div class="starter-template">
+
+<!-- WE WANT THE FRIENDS LIST HERE -->
+         </div>
+       </div><!-- /.container -->
+
 
 
 
