@@ -158,6 +158,7 @@
         as currFriends, posts WHERE currFriends.user_id = 
         posts.user_id");
       $result = pg_query($_SESSION['conn'], $query);
+      echo "friend's post query was: ".$query;
       
       echo "<table class='table table-striped table-bordered table-hover'>\n";
       echo "<caption>Users</caption>\n";
@@ -205,9 +206,9 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.php">Home</a></li>
+            <li><a id="home" href="index.php">Home</a></li>
             <li><a id="friendList" href="friendlist.php?friendList=true">Friend List</a></li>
-            <li><a id="friendsPosts" href="friendsposts.php?friendsPosts=true">Friend's Posts</a></li>
+            <li><a id="friendsPosts" class="active" href="friendsposts.php?friendsPosts=true">Friend's Posts</a></li>
             <li>
               <a id="logoutBtn" href="index.php?logoutBtn=true">Logout</a>
             </li>
@@ -252,7 +253,7 @@
       <?php 
       //Check if friends posts function was called
       if($_GET['friendsPosts']){friendsPosts();}
-
+      
       // Check if friend list function was called
       if($_GET['friendList']){friendList();}
 

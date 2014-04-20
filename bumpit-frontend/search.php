@@ -158,7 +158,7 @@
         as currFriends, posts WHERE currFriends.user_id = 
         posts.user_id");
       $result = pg_query($_SESSION['conn'], $query);
-      
+
       echo "<table class='table table-striped table-bordered table-hover'>\n";
       echo "<caption>Users</caption>\n";
       while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
@@ -205,7 +205,7 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.php">Home</a></li>
+            <li><a href="index.php">Home</a></li>
             <li><a id="friendList" href="friendlist.php?friendList=true">Friend List</a></li>
             <li><a id="friendsPosts" href="friendsposts.php?friendsPosts=true">Friend's Posts</a></li>
             <li>
@@ -249,10 +249,14 @@
       
       <div class="container">
         <div class="starter-template">
+        <form action = ""
+
+
+
       <?php 
       //Check if friends posts function was called
       if($_GET['friendsPosts']){friendsPosts();}
-
+      
       // Check if friend list function was called
       if($_GET['friendList']){friendList();}
 
