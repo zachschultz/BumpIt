@@ -29,6 +29,7 @@
 
     session_start();
 
+    // Store username and password in session variables
     if (isset($_POST['signin_user']))
     {
       $_SESSION['signin_user']=$_POST['signin_user'];
@@ -37,7 +38,7 @@
     }
 
 
-    
+    // Reset username and pass to that of the session variables
     $signin_user = $_SESSION['signin_user'];
     $signin_pass = $_SESSION['signin_pass'];
     $isSigningIn = $_POST['isSigningIn'];
@@ -45,7 +46,7 @@
  
 
 
-    
+    // Connect to the database, check if error happens
     $conn = pg_connect("host=postgres.cise.ufl.edu dbname=bumpit user=ec1 password = UFProgE1");
     $_SESSION['conn'] = $conn;
     if (!$conn) { 
@@ -65,14 +66,13 @@
       $countResult = pg_fetch_row(pg_query($conn, $countQuery)); 
       // user_ID (the result is an array silly!)
       $count = $countResult[0];
-      
       // Add new account to the database
       $registerQuery = sprintf("INSERT INTO users VALUES ($count, '$reg_user', '$reg_pass', 'false', '0');");
       $registerResult = pg_query($conn, $registerQuery);
       
     }
     
-
+    // User is just signing in
     if ($isSigningIn){
     // Sign in to database
     $query = sprintf("SELECT login("."'".$_SESSION['signin_user']."'".","."'".$_SESSION['signin_pass']."'".");");
@@ -82,6 +82,7 @@
     // Grab userID
     $result = pg_fetch_row(pg_query($conn, "SELECT user_id FROM users WHERE userName = "."'".$_SESSION['signin_user']."'".""));
     $userID = $result[0];
+    // Store userID inside a session variable
     $_SESSION['userID']=$userID;
 
 
@@ -102,59 +103,52 @@
 
     }
 
-    // Load Friend List
+    // Load Friend List function
     if($_GET['friendList']){friendList();}
 
-      function friendList(){
+    function friendList(){
       $userID = $_SESSION['userID'];
-        $query = sprintf("SELECT username FROM (SELECT friend_id FROM friends WHERE user_id = $userID) AS currFriends, users WHERE friend_id = user_id;");
+      $query = sprintf("SELECT username FROM (SELECT friend_id FROM friends WHERE user_id = $userID) AS currFriends, users WHERE friend_id = user_id;");
+      $result = pg_query($_SESSION['conn'], $query);
         
-        $result = pg_query($_SESSION['conn'], $query);
-        
-        echo "<table class='table table-striped table-bordered table-hover'>\n";
-        echo "<caption>Friend List</caption>\n";
-        while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
-          echo "\t<tr>\n";
-          foreach ($line as $col_value) {
-            echo "\t\t<td>$col_value</td>\n";
-          }
-           echo "\t</tr>\n";
-          }
-          echo "</table>\n";
+      echo "<table class='table table-striped table-bordered table-hover'>\n";
+      echo "<caption>Friend List</caption>\n";
+      while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
+        echo "\t<tr>\n";
+        foreach ($line as $col_value) {
+          echo "\t\t<td>$col_value</td>\n";
+        }
+        echo "\t</tr>\n";
+      }     
+      echo "</table>\n";
     }
-    
+  
 
-    
+    // LOGIC NOT WORKING RIGHT YET (DISPLAYING MULTIPLES OF SAME NAME)
+    // Find Friends function
+    if($_POST['search']){searchForFriends();}
 
-
-    
-    
-    
-
-      // LOGIC NOT WORKING RIGHT YET (DISPLAYING MULTIPLES OF SAME NAME)
-      // Find Friends
     function searchForFriends() {
       $search = $_POST['search'];
-      
+      $userID = $_SESSION['userID'];
       $query = sprintf("SELECT userName FROM (SELECT friend_id FROM friends WHERE user_id = $userID) AS currFriends, users WHERE friend_id <> users.user_id AND userName ILIKE ( '%%' || "."'".$search."'"." || '%%');");
-
-      $result = pg_query($conn, $query);
+      echo "DEBUG PURPOSES-> SEARCHFORFRIENDS QUERY IS: ".$query;
+      $result = pg_query($_SESSION['conn'], $query);
 
       echo "<table class='table table-striped table-bordered table-hover'>\n";
-        echo "<caption>Friend List</caption>\n";
-        while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
-          echo "\t<tr>\n";
-          foreach ($line as $col_value) {
-            echo "\t\t<td>$col_value</td>\n";
-          }
-           echo "\t</tr>\n";
-          }
-          echo "</table>\n";
-    
+      echo "<caption>Users</caption>\n";
+      while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
+        echo "\t<tr>\n";
+        foreach ($line as $col_value) {
+          echo "\t\t<td>$col_value</td>\n";
         }
+         echo "\t</tr>\n";
+        }
+        echo "</table>\n";
+  
+    }
 
-
-    ?>
+?>
 
 
 
@@ -208,7 +202,7 @@
             </li>
           </ul>
           <!-- Search bar -->
-          <form class="navbar-form navbar-right" role="search" action="index.php" method="post">
+          <form class="navbar-form navbar-right" role="search" action="index.php?search=true" method="post">
             <div class="form-group">
               <input name="search" type="text" class="form-control" placeholder="Search">
               <input name="isSigningIn" type="hidden" value="1">
