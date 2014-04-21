@@ -148,27 +148,36 @@
   
     }
 
-    // Load friend's posts function
+    // Load Friend's posts function
     //if($_GET['friendsPosts']){friendsPosts();}
 
     function friendsPosts() {
       $userID = $_SESSION['userID'];
-      $query = sprintf("SELECT userName, posts FROM 
-        (SELECT friend_id FROM friends WHERE user_id = $userID)
-        as currFriends, posts WHERE currFriends.user_id = 
-        posts.user_id");
+      $query = sprintf("SELECT friend_posts($userID);");
       $result = pg_query($_SESSION['conn'], $query);
       
       echo "<table class='table table-striped table-bordered table-hover'>\n";
-      echo "<caption>Users</caption>\n";
+      echo "<caption>Friend's Posts</caption>\n";
       while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
         echo "\t<tr>\n";
         foreach ($line as $col_value) {
           echo "\t\t<td>$col_value</td>\n";
+          echo $col_value['username'];
         }
          echo "\t</tr>\n";
         }
         echo "</table>\n";
+    }
+
+    // Remove Friend function
+    // NOT ACTIVE
+
+    function removeFriend() {
+      $userID = $_SESSION['userID'];
+      $friendID = $_POST['friendID'];
+      $query = sprintf("SELECT remove_friend($_POST[userID], $_POST[friendID]);");
+      $result = pg_query($_SESSION['conn'], $query);
+
     }
 
 ?>

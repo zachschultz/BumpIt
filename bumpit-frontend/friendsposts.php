@@ -153,19 +153,18 @@
 
     function friendsPosts() {
       $userID = $_SESSION['userID'];
-      $query = sprintf("SELECT userName, posts FROM 
-        (SELECT friend_id FROM friends WHERE user_id = $userID)
-        as currFriends, posts WHERE currFriends.user_id = 
-        posts.user_id");
-      $result = pg_query($_SESSION['conn'], $query);
-      echo "friend's post query was: ".$query;
-      
+      $query = sprintf("SELECT friend_posts($userID);");
+      $result = pg_query($_SESSION['conn'], $query);    
       echo "<table class='table table-striped table-bordered table-hover'>\n";
-      echo "<caption>Users</caption>\n";
+      echo "<caption>Friend's Posts</caption>\n";
+      
       while ($line=pg_fetch_array($result, null, PGSQL_ASSOC)) {
         echo "\t<tr>\n";
         foreach ($line as $col_value) {
           echo "\t\t<td>$col_value</td>\n";
+
+      
+          
         }
          echo "\t</tr>\n";
         }
